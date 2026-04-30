@@ -15,7 +15,7 @@ import {
   signOut
 } from "firebase/auth";
 
-// ---------------- FIREBASE CONFIG ----------------
+// ---------------- FIREBASE ----------------
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
   authDomain: "YOUR_AUTH_DOMAIN",
@@ -44,7 +44,7 @@ export default function App() {
 
   // ---------------- AUTH ----------------
   useEffect(() => {
-    onAuthStateChanged(auth, (u) => setUser(u));
+    onAuthStateChanged(auth, setUser);
   }, []);
 
   // ---------------- LOAD DATA ----------------
@@ -60,11 +60,9 @@ export default function App() {
     loadData();
   }, []);
 
-  // ---------------- AUTH ACTIONS ----------------
   const login = () => signInWithEmailAndPassword(auth, email, password);
   const logout = () => signOut(auth);
 
-  // ---------------- CRUD ----------------
   const addEvent = async () => {
     await addDoc(collection(db, "events"), { title: newEvent });
     setNewEvent("");
@@ -89,16 +87,8 @@ export default function App() {
         <div style={{ padding: 40 }}>
           <h2>Admin Login</h2>
 
-          <input
-            placeholder="Email"
-            onChange={(e) => setEmail(e.target.value)}
-          />
-
-          <input
-            type="password"
-            placeholder="Password"
-            onChange={(e) => setPassword(e.target.value)}
-          />
+          <input placeholder="Email" onChange={(e) => setEmail(e.target.value)} />
+          <input type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} />
 
           <button onClick={login}>Login</button>
         </div>
@@ -111,13 +101,10 @@ export default function App() {
         <button onClick={logout}>Logout</button>
 
         <h3>Events</h3>
-        <input
-          value={newEvent}
-          onChange={(e) => setNewEvent(e.target.value)}
-        />
-        <button onClick={addEvent}>Add Event</button>
+        <input value={newEvent} onChange={(e) => setNewEvent(e.target.value)} />
+        <button onClick={addEvent}>Add</button>
 
-        {events.map((e) => (
+        {events.map(e => (
           <div key={e.id}>
             {e.title}
             <button onClick={() => removeItem("events", e.id)}>X</button>
@@ -125,13 +112,10 @@ export default function App() {
         ))}
 
         <h3>Members</h3>
-        <input
-          value={newMember}
-          onChange={(e) => setNewMember(e.target.value)}
-        />
-        <button onClick={addMember}>Add Member</button>
+        <input value={newMember} onChange={(e) => setNewMember(e.target.value)} />
+        <button onClick={addMember}>Add</button>
 
-        {members.map((m) => (
+        {members.map(m => (
           <div key={m.id}>
             {m.name}
             <button onClick={() => removeItem("members", m.id)}>X</button>
@@ -141,16 +125,22 @@ export default function App() {
     );
   }
 
-  // ---------------- MAIN WEBSITE ----------------
+  // ---------------- MAIN UI (MODERN DESIGN) ----------------
   return (
-    <div style={{ background: "#0b1220", color: "white", minHeight: "100vh" }}>
+    <div style={{
+      fontFamily: "Poppins, sans-serif",
+      background: "#0b1220",
+      color: "#fff"
+    }}>
 
       {/* NAV */}
       <nav style={{
         display: "flex",
         justifyContent: "space-between",
         padding: "15px 30px",
-        background: "rgba(0,0,0,0.5)"
+        background: "rgba(0,0,0,0.4)",
+        position: "sticky",
+        top: 0
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <img src="/logo.jpg" style={{ height: 45 }} />
@@ -164,30 +154,56 @@ export default function App() {
       </nav>
 
       {/* HERO */}
-      <div style={{ textAlign: "center", padding: 80 }}>
-        <h1>ସଂଘର୍ଷ ଯୁବ ପରିଷଦ, ଅଠତିରା</h1>
-        <p>Established 1993 | ଯୁବ ଶକ୍ତି ଦ୍ୱାରା ସମାଜ ଉନ୍ନତି</p>
-        <button style={{ padding: 10, marginTop: 20 }}>Join Us</button>
-      </div>
+      <section style={{
+        height: "90vh",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        textAlign: "center",
+        background: "linear-gradient(135deg,#0b1220,#1a2a6c,#0f2027)"
+      }}>
+        <h1 style={{ fontSize: 48 }}>
+          ସଂଘର୍ଷ ଯୁବ ପରିଷଦ
+        </h1>
 
-      {/* ABOUT (IMAGES FROM PUBLIC FOLDER) */}
-      <section style={{ padding: 40 }}>
-        <h2>About Us</h2>
+        <p style={{ maxWidth: 600, opacity: 0.8 }}>
+          Empowering youth for social change | ସମାଜ ଉନ୍ନତି ପାଇଁ ଯୁବଶକ୍ତି
+        </p>
 
-        <div style={{ display: "flex", gap: 20, flexWrap: "wrap" }}>
-          <div>
-            <img src="/president.jpg" style={{ width: 200 }} />
-            <p>President</p>
+        <button style={{
+          marginTop: 20,
+          padding: "12px 25px",
+          background: "#00e5ff",
+          border: "none",
+          borderRadius: 8
+        }}>
+          Join Us
+        </button>
+      </section>
+
+      {/* IMPACT */}
+      <section style={{ padding: 60 }}>
+        <h2>Our Impact</h2>
+
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit,minmax(250px,1fr))",
+          gap: 20
+        }}>
+          <div style={{ background: "rgba(255,255,255,0.05)", padding: 20, borderRadius: 12 }}>
+            <h3>30+ Years</h3>
+            <p>Service to society</p>
           </div>
 
-          <div>
-            <img src="/secretary.jpg" style={{ width: 200 }} />
-            <p>Secretary</p>
+          <div style={{ background: "rgba(255,255,255,0.05)", padding: 20, borderRadius: 12 }}>
+            <h3>100+ Members</h3>
+            <p>Active youth network</p>
           </div>
 
-          <div>
-            <img src="/cashier.jpg" style={{ width: 200 }} />
-            <p>Treasurer</p>
+          <div style={{ background: "rgba(255,255,255,0.05)", padding: 20, borderRadius: 12 }}>
+            <h3>50+ Events</h3>
+            <p>Cultural & social programs</p>
           </div>
         </div>
       </section>
@@ -195,7 +211,7 @@ export default function App() {
       {/* EVENTS */}
       <section style={{ padding: 40 }}>
         <h2>Events</h2>
-        {events.map((e) => (
+        {events.map(e => (
           <div key={e.id}>{e.title}</div>
         ))}
       </section>
@@ -203,7 +219,7 @@ export default function App() {
       {/* MEMBERS */}
       <section style={{ padding: 40 }}>
         <h2>Members</h2>
-        {members.map((m) => (
+        {members.map(m => (
           <div key={m.id}>{m.name}</div>
         ))}
       </section>
