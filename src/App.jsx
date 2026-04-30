@@ -15,7 +15,7 @@ import {
   signOut
 } from "firebase/auth";
 
-// ---------------- FIREBASE ----------------
+// ---------------- FIREBASE CONFIG ----------------
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
   authDomain: "YOUR_AUTH_DOMAIN",
@@ -42,10 +42,12 @@ export default function App() {
   const [newEvent, setNewEvent] = useState("");
   const [newMember, setNewMember] = useState("");
 
+  // ---------------- AUTH ----------------
   useEffect(() => {
-    onAuthStateChanged(auth, setUser);
+    onAuthStateChanged(auth, (u) => setUser(u));
   }, []);
 
+  // ---------------- LOAD DATA ----------------
   const loadData = async () => {
     const ev = await getDocs(collection(db, "events"));
     setEvents(ev.docs.map(d => ({ id: d.id, ...d.data() })));
@@ -58,9 +60,11 @@ export default function App() {
     loadData();
   }, []);
 
+  // ---------------- AUTH ACTIONS ----------------
   const login = () => signInWithEmailAndPassword(auth, email, password);
   const logout = () => signOut(auth);
 
+  // ---------------- CRUD ----------------
   const addEvent = async () => {
     await addDoc(collection(db, "events"), { title: newEvent });
     setNewEvent("");
@@ -78,14 +82,24 @@ export default function App() {
     loadData();
   };
 
-  // ---------------- ADMIN ----------------
+  // ---------------- ADMIN PAGE ----------------
   if (page === "admin") {
     if (!user) {
       return (
         <div style={{ padding: 40 }}>
           <h2>Admin Login</h2>
-          <input placeholder="email" onChange={e => setEmail(e.target.value)} />
-          <input type="password" placeholder="password" onChange={e => setPassword(e.target.value)} />
+
+          <input
+            placeholder="Email"
+            onChange={(e) => setEmail(e.target.value)}
+          />
+
+          <input
+            type="password"
+            placeholder="Password"
+            onChange={(e) => setPassword(e.target.value)}
+          />
+
           <button onClick={login}>Login</button>
         </div>
       );
@@ -97,10 +111,13 @@ export default function App() {
         <button onClick={logout}>Logout</button>
 
         <h3>Events</h3>
-        <input value={newEvent} onChange={e => setNewEvent(e.target.value)} />
-        <button onClick={addEvent}>Add</button>
+        <input
+          value={newEvent}
+          onChange={(e) => setNewEvent(e.target.value)}
+        />
+        <button onClick={addEvent}>Add Event</button>
 
-        {events.map(e => (
+        {events.map((e) => (
           <div key={e.id}>
             {e.title}
             <button onClick={() => removeItem("events", e.id)}>X</button>
@@ -108,10 +125,13 @@ export default function App() {
         ))}
 
         <h3>Members</h3>
-        <input value={newMember} onChange={e => setNewMember(e.target.value)} />
-        <button onClick={addMember}>Add</button>
+        <input
+          value={newMember}
+          onChange={(e) => setNewMember(e.target.value)}
+        />
+        <button onClick={addMember}>Add Member</button>
 
-        {members.map(m => (
+        {members.map((m) => (
           <div key={m.id}>
             {m.name}
             <button onClick={() => removeItem("members", m.id)}>X</button>
@@ -121,7 +141,7 @@ export default function App() {
     );
   }
 
-  // ---------------- WEBSITE UI ----------------
+  // ---------------- MAIN WEBSITE ----------------
   return (
     <div style={{ background: "#0b1220", color: "white", minHeight: "100vh" }}>
 
@@ -150,10 +170,11 @@ export default function App() {
         <button style={{ padding: 10, marginTop: 20 }}>Join Us</button>
       </div>
 
-      {/* ABOUT */}
+      {/* ABOUT (IMAGES FROM PUBLIC FOLDER) */}
       <section style={{ padding: 40 }}>
         <h2>About Us</h2>
-        <div style={{ display: "flex", gap: 20 }}>
+
+        <div style={{ display: "flex", gap: 20, flexWrap: "wrap" }}>
           <div>
             <img src="/president.jpg" style={{ width: 200 }} />
             <p>President</p>
@@ -174,7 +195,7 @@ export default function App() {
       {/* EVENTS */}
       <section style={{ padding: 40 }}>
         <h2>Events</h2>
-        {events.map(e => (
+        {events.map((e) => (
           <div key={e.id}>{e.title}</div>
         ))}
       </section>
@@ -182,14 +203,14 @@ export default function App() {
       {/* MEMBERS */}
       <section style={{ padding: 40 }}>
         <h2>Members</h2>
-        {members.map(m => (
+        {members.map((m) => (
           <div key={m.id}>{m.name}</div>
         ))}
       </section>
 
       {/* FOOTER */}
       <footer style={{ textAlign: "center", padding: 20, opacity: 0.6 }}>
-        © 2026 ସଂଘର୍ଷ ଯୁବ ପରିଷଦ
+        © 2026 ସଂଘର୍ଷ ଯୁବ ପରିଷଦ, ଅଠତିରା
       </footer>
 
     </div>
