@@ -29,6 +29,18 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
+// ---------------- SIMPLE ANIMATION HOOK ----------------
+const useReveal = () => {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const t = setTimeout(() => setVisible(true), 100);
+    return () => clearTimeout(t);
+  }, []);
+
+  return visible;
+};
+
 export default function App() {
   const [user, setUser] = useState(null);
   const [page, setPage] = useState("home");
@@ -42,12 +54,14 @@ export default function App() {
   const [newEvent, setNewEvent] = useState("");
   const [newMember, setNewMember] = useState("");
 
-  // ---------------- AUTH ----------------
+  const reveal = useReveal();
+
+  // AUTH
   useEffect(() => {
     onAuthStateChanged(auth, setUser);
   }, []);
 
-  // ---------------- LOAD DATA ----------------
+  // LOAD DATA
   const loadData = async () => {
     const ev = await getDocs(collection(db, "events"));
     setEvents(ev.docs.map(d => ({ id: d.id, ...d.data() })));
@@ -80,28 +94,26 @@ export default function App() {
     loadData();
   };
 
-  // ---------------- ADMIN PAGE ----------------
+  // ---------------- ADMIN ----------------
   if (page === "admin") {
     if (!user) {
       return (
-        <div style={{ padding: 40 }}>
+        <div style={styles.login}>
           <h2>Admin Login</h2>
-
-          <input placeholder="Email" onChange={(e) => setEmail(e.target.value)} />
-          <input type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} />
-
-          <button onClick={login}>Login</button>
+          <input placeholder="Email" onChange={e => setEmail(e.target.value)} />
+          <input type="password" placeholder="Password" onChange={e => setPassword(e.target.value)} />
+          <button style={styles.button} onClick={login}>Login</button>
         </div>
       );
     }
 
     return (
-      <div style={{ padding: 40 }}>
+      <div style={styles.admin}>
         <h2>Admin Panel</h2>
-        <button onClick={logout}>Logout</button>
+        <button onClick={logout} style={styles.button}>Logout</button>
 
         <h3>Events</h3>
-        <input value={newEvent} onChange={(e) => setNewEvent(e.target.value)} />
+        <input value={newEvent} onChange={e => setNewEvent(e.target.value)} />
         <button onClick={addEvent}>Add</button>
 
         {events.map(e => (
@@ -112,7 +124,7 @@ export default function App() {
         ))}
 
         <h3>Members</h3>
-        <input value={newMember} onChange={(e) => setNewMember(e.target.value)} />
+        <input value={newMember} onChange={e => setNewMember(e.target.value)} />
         <button onClick={addMember}>Add</button>
 
         {members.map(m => (
@@ -125,24 +137,17 @@ export default function App() {
     );
   }
 
-  // ---------------- MAIN UI (MODERN DESIGN) ----------------
+  // ---------------- MAIN WEBSITE ----------------
   return (
-    <div style={{
-      fontFamily: "Poppins, sans-serif",
-      background: "#0b1220",
-      color: "#fff"
-    }}>
+    <div style={styles.body}>
 
       {/* NAV */}
       <nav style={{
-        display: "flex",
-        justifyContent: "space-between",
-        padding: "15px 30px",
-        background: "rgba(0,0,0,0.4)",
-        position: "sticky",
-        top: 0
+        ...styles.nav,
+        opacity: reveal ? 1 : 0,
+        transform: reveal ? "translateY(0)" : "translateY(-20px)"
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <div style={styles.brand}>
           <img src="/logo.jpg" style={{ height: 45 }} />
           <b>ସଂଘର୍ଷ ଯୁବ ପରିଷଦ</b>
         </div>
@@ -155,80 +160,182 @@ export default function App() {
 
       {/* HERO */}
       <section style={{
-        height: "90vh",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        textAlign: "center",
-        background: "linear-gradient(135deg,#0b1220,#1a2a6c,#0f2027)"
+        ...styles.hero,
+        opacity: reveal ? 1 : 0,
+        transform: reveal ? "scale(1)" : "scale(1.05)"
       }}>
-        <h1 style={{ fontSize: 48 }}>
+        <h1 style={styles.heroTitle}>
           ସଂଘର୍ଷ ଯୁବ ପରିଷଦ
         </h1>
 
-        <p style={{ maxWidth: 600, opacity: 0.8 }}>
-          Empowering youth for social change | ସମାଜ ଉନ୍ନତି ପାଇଁ ଯୁବଶକ୍ତି
+        <p style={styles.heroText}>
+          Empowering Youth • Social Change • Cultural Growth
         </p>
 
-        <button style={{
-          marginTop: 20,
-          padding: "12px 25px",
-          background: "#00e5ff",
-          border: "none",
-          borderRadius: 8
-        }}>
-          Join Us
-        </button>
+        <button style={styles.cta}>Join Us</button>
       </section>
 
       {/* IMPACT */}
-      <section style={{ padding: 60 }}>
-        <h2>Our Impact</h2>
+      <section style={styles.section}>
+        <h2 style={styles.title}>Our Impact</h2>
 
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit,minmax(250px,1fr))",
-          gap: 20
-        }}>
-          <div style={{ background: "rgba(255,255,255,0.05)", padding: 20, borderRadius: 12 }}>
-            <h3>30+ Years</h3>
-            <p>Service to society</p>
-          </div>
+        <div style={styles.grid}>
+          <div style={styles.card}>30+ Years Service</div>
+          <div style={styles.card}>100+ Members</div>
+          <div style={styles.card}>50+ Events</div>
+        </div>
+      </section>
 
-          <div style={{ background: "rgba(255,255,255,0.05)", padding: 20, borderRadius: 12 }}>
-            <h3>100+ Members</h3>
-            <p>Active youth network</p>
-          </div>
+      {/* PROGRAMS */}
+      <section style={styles.section}>
+        <h2 style={styles.title}>Programs</h2>
 
-          <div style={{ background: "rgba(255,255,255,0.05)", padding: 20, borderRadius: 12 }}>
-            <h3>50+ Events</h3>
-            <p>Cultural & social programs</p>
-          </div>
+        <div style={styles.grid}>
+          <div style={styles.cardHover}>Education Support</div>
+          <div style={styles.cardHover}>Health Awareness</div>
+          <div style={styles.cardHover}>Cultural Events</div>
         </div>
       </section>
 
       {/* EVENTS */}
-      <section style={{ padding: 40 }}>
-        <h2>Events</h2>
+      <section style={styles.section}>
+        <h2 style={styles.title}>Events</h2>
         {events.map(e => (
-          <div key={e.id}>{e.title}</div>
+          <div key={e.id} style={styles.listItem}>{e.title}</div>
         ))}
       </section>
 
       {/* MEMBERS */}
-      <section style={{ padding: 40 }}>
-        <h2>Members</h2>
+      <section style={styles.section}>
+        <h2 style={styles.title}>Members</h2>
         {members.map(m => (
-          <div key={m.id}>{m.name}</div>
+          <div key={m.id} style={styles.listItem}>{m.name}</div>
         ))}
       </section>
 
       {/* FOOTER */}
-      <footer style={{ textAlign: "center", padding: 20, opacity: 0.6 }}>
-        © 2026 ସଂଘର୍ଷ ଯୁବ ପରିଷଦ, ଅଠତିରା
+      <footer style={styles.footer}>
+        © 2026 ସଂଘର୍ଷ ଯୁବ ପରିଷଦ
       </footer>
 
     </div>
   );
 }
+
+// ---------------- PREMIUM STYLES ----------------
+const styles = {
+  body: {
+    background: "#0b1220",
+    color: "white",
+    fontFamily: "sans-serif",
+    overflowX: "hidden"
+  },
+
+  nav: {
+    display: "flex",
+    justifyContent: "space-between",
+    padding: 20,
+    background: "rgba(255,255,255,0.05)",
+    backdropFilter: "blur(10px)",
+    position: "sticky",
+    top: 0,
+    transition: "0.5s"
+  },
+
+  brand: {
+    display: "flex",
+    alignItems: "center",
+    gap: 10
+  },
+
+  hero: {
+    height: "90vh",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    textAlign: "center",
+    background: "linear-gradient(135deg,#0b1220,#1a2a6c,#0f2027)",
+    transition: "1s ease"
+  },
+
+  heroTitle: {
+    fontSize: 55,
+    animation: "fadeIn 1s ease"
+  },
+
+  heroText: {
+    opacity: 0.8,
+    maxWidth: 600,
+    marginTop: 10
+  },
+
+  cta: {
+    marginTop: 20,
+    padding: "12px 25px",
+    background: "#00e5ff",
+    border: "none",
+    borderRadius: 10,
+    cursor: "pointer",
+    transition: "0.3s"
+  },
+
+  section: {
+    padding: 60
+  },
+
+  title: {
+    fontSize: 28,
+    marginBottom: 20
+  },
+
+  grid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit,minmax(250px,1fr))",
+    gap: 20
+  },
+
+  card: {
+    background: "rgba(255,255,255,0.05)",
+    padding: 20,
+    borderRadius: 12,
+    transition: "0.3s"
+  },
+
+  cardHover: {
+    background: "rgba(255,255,255,0.05)",
+    padding: 20,
+    borderRadius: 12,
+    transition: "0.3s",
+    cursor: "pointer"
+  },
+
+  listItem: {
+    padding: 10,
+    marginBottom: 10,
+    background: "rgba(255,255,255,0.05)",
+    borderRadius: 8
+  },
+
+  footer: {
+    textAlign: "center",
+    padding: 20,
+    opacity: 0.6
+  },
+
+  login: {
+    padding: 40
+  },
+
+  admin: {
+    padding: 40
+  },
+
+  button: {
+    padding: "10px 20px",
+    marginTop: 10,
+    background: "#00e5ff",
+    border: "none",
+    borderRadius: 8
+  }
+};
