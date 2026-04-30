@@ -29,7 +29,7 @@ export default function Members() {
             borderRadius: 12,
             textAlign: "center"
           }}>
-            <img src={m.photo} style={{ width: 120, borderRadius: "50%" }} />
+            <img src={m.photo} style={{ width: 100, borderRadius: "50%" }} />
             <h3>{m.name}</h3>
             <p>{m.role}</p>
           </div>
