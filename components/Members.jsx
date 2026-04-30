@@ -17,7 +17,11 @@ export default function Members() {
     <section style={{ padding: 50 }}>
       <h2>Committee</h2>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 20 }}>
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))",
+        gap: 20
+      }}>
         {members.map(m => (
           <div key={m.id} style={{
             background: "rgba(255,255,255,0.05)",
