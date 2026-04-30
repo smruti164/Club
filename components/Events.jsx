@@ -19,9 +19,9 @@ export default function Events() {
 
       {events.map(e => (
         <div key={e.id} style={{
-          padding: 15,
-          marginTop: 10,
           background: "rgba(255,255,255,0.05)",
+          padding: 10,
+          marginTop: 10,
           borderRadius: 10
         }}>
           {e.title}
