@@ -15,14 +15,9 @@ export default function Members() {
 
   return (
     <section style={{ padding: 50 }}>
-      <h2>Committee Members</h2>
+      <h2>Committee</h2>
 
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))",
-        gap: 20
-      }}>
-
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 20 }}>
         {members.map(m => (
           <div key={m.id} style={{
             background: "rgba(255,255,255,0.05)",
@@ -30,15 +25,11 @@ export default function Members() {
             borderRadius: 12,
             textAlign: "center"
           }}>
-            <img
-              src={m.photo}
-              style={{ width: 120, height: 120, borderRadius: "50%" }}
-            />
+            <img src={m.photo} style={{ width: 120, borderRadius: "50%" }} />
             <h3>{m.name}</h3>
             <p>{m.role}</p>
           </div>
         ))}
-
       </div>
     </section>
   );
